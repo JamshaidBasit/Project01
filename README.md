@@ -13,7 +13,7 @@ MongoDB Installation Guide
 ## Installation
 Clone the repository:
 git clone https://github.com/your-username/your-repo-name.git
-cd your-repo-name
+cd your-repo-name here
 
 ## Create a virtual environment (recommended):
 python -m venv .venv
