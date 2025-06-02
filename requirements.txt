@@ -1,0 +1,7 @@
+langgraph
+langchain-groq
+langchain-google-genai
+langchain-chroma
+langchain-core
+pymongo
+typing_extensions
