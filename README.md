@@ -1,16 +1,5 @@
 # Multi-Agent PDF Document Analysis Workflow
-## Project Structure
-.
-├── config.py             # Global configurations (API keys, MongoDB URIs, DB/Collection names)
-├── models.py             # Defines the LangGraph State (TypedDict) for the workflow
-├── llm_init.py           # Initializes and configures LLM instances (Groq, Gemini)
-├── knowledge_base.py     # Manages external knowledge (ChromaDB, retriever setup)
-├── agents.py             # Defines the structure and behavior of individual AI agents; handles dynamic loading
-├── workflow_nodes.py     # Contains the LangGraph nodes (main processing logic, final report generation)
-├── pdf_processor.py      # Handles PDF extraction, chunking, and contextual merging
-├── database_saver.py     # Manages saving analysis results to MongoDB and clearing the collection
-├── main.py               # The main script to run the multi-agent workflow
-└── requirements.txt      # Lists all project dependencie
+
 # Setup
 ## Prerequisites
 Python 3.9+
