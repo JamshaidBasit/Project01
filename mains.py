@@ -33,7 +33,7 @@ def run_workflow():
         graph_builder.add_edge(agent_name, "fnl_rprt")
 
     # Set the exit point of the graph to "fnl_rprt"
-    graph_builder.add_edge("fnl_rprt", END)
+    graph_builder.add_edge("fnl_rprt", END) 
 
     # Compile the graph for execution
     graph = graph_builder.compile()
