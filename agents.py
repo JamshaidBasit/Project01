@@ -28,6 +28,7 @@ Page: {page}
 Paragraph: {paragraph}
 
 Context: This text is from a book titled "{title}".
+Predicted Category: {predicted_label}
 
 Your task is to determine if this text contains any content that:
 {specific_criteria}
@@ -80,27 +81,53 @@ def create_review_agent(review_name: str, criteria: str, guidelines: str, llm_mo
         print(f"\n--- {state['current_agent_name']} Sub-Agent Step - Attempt {state.get('current_agent_retries', 0) + 1} ---")
         report_text = state["report_text"]
         metadata = state["metadata"]
+        predicted_label = metadata.get("predicted_label", "N/A")
 
-        relevant_knowledge = get_relevant_info(report_text)
         official_narrative = "No relevant official narrative found."
         key_points_str = "No relevant key points found."
         sensitive_aspects_str = "No relevant sensitive aspects found."
         recommended_terminology_str = "No relevant recommended terminology found."
         authoritative_sources_str = "No relevant authoritative sources found."
 
-        if isinstance(relevant_knowledge, list) and relevant_knowledge:
-            relevant_item = relevant_knowledge[0]
-            official_narrative = relevant_item.get("official_narrative", official_narrative)
-            key_points_str = ", ".join(relevant_item.get("key_points", []))
-            sensitive_aspects_str = json.dumps(relevant_item.get("sensitive_aspects", []))
-            recommended_terminology_str = json.dumps(relevant_item.get("recommended_terminology", {}))
-            authoritative_sources_str = ", ".join(relevant_item.get("authoritative_sources", []))
+        # MODIFICATION START: Conditional KB application based on agent name and predicted label
+        # FactCheckingReview agent always uses KB
+        if state['current_agent_name'] == "FactCheckingReview":
+            print(f"--- {state['current_agent_name']} (FactCheckingReview) always uses KB. ---")
+            relevant_knowledge = get_relevant_info(report_text)
+            if isinstance(relevant_knowledge, list) and relevant_knowledge:
+                relevant_item = relevant_knowledge[0]
+                official_narrative = relevant_item.get("official_narrative", official_narrative)
+                key_points_str = ", ".join(relevant_item.get("key_points", []))
+                sensitive_aspects_str = json.dumps(relevant_item.get("sensitive_aspects", []))
+                recommended_terminology_str = json.dumps(relevant_item.get("recommended_terminology", {}))
+                authoritative_sources_str = ", ".join(relevant_item.get("authoritative_sources", []))
+        # Other agents skip KB if the text is classified as "general or unrelated text"
+        elif predicted_label == "general or unrelated text":
+            print(f"--- Skipping KB lookup for '{predicted_label}' chunk for {state['current_agent_name']}. ---")
+            official_narrative = "N/A (Text classified as general or unrelated)"
+            key_points_str = "N/A (Text classified as general or unrelated)"
+            sensitive_aspects_str = "N/A (Text classified as general or unrelated)"
+            recommended_terminology_str = "N/A (Text classified as general or unrelated)"
+            authoritative_sources_str = "N/A (Text classified as general or unrelated)"
+        # All other cases (not FactCheckingReview and not "general or unrelated text") use KB
+        else:
+            print(f"--- Using KB for '{predicted_label}' chunk for {state['current_agent_name']}. ---")
+            relevant_knowledge = get_relevant_info(report_text)
+            if isinstance(relevant_knowledge, list) and relevant_knowledge:
+                relevant_item = relevant_knowledge[0]
+                official_narrative = relevant_item.get("official_narrative", official_narrative)
+                key_points_str = ", ".join(relevant_item.get("key_points", []))
+                sensitive_aspects_str = json.dumps(relevant_item.get("sensitive_aspects", []))
+                recommended_terminology_str = json.dumps(relevant_item.get("recommended_terminology", {}))
+                authoritative_sources_str = ", ".join(relevant_item.get("authoritative_sources", []))
+        # MODIFICATION END
 
         prompt = prompt_template.format(
             text=report_text,
             page=metadata.get("page", "N/A"),
             paragraph=metadata.get("paragraph", "N/A"),
             title=metadata.get("title", "N/A"),
+            predicted_label=predicted_label,
             specific_criteria=criteria,
             policy_guidelines=guidelines,
             official_narrative=official_narrative,

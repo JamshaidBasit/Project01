@@ -4,10 +4,11 @@ import pymongo
 from typing import List, Dict
 from langchain_chroma import Chroma
 from langchain_core.documents import Document
+from langchain_community.embeddings import FastEmbedEmbeddings
 from langchain.chains.query_constructor.schema import AttributeInfo
 from langchain.retrievers.self_query.base import SelfQueryRetriever
 from config import MONGO_URI, KB_DB_NAME, KB_COLLECTION_NAME, CHROMA_DB_DIRECTORY
-from llm_init import embeddings, llm_google
+from llm_init import embeddings, llm1
 
 # --- KNOWLEDGE BASE EXTRACTION AND VECTOR STORE INITIALIZATION ────────────────
 
@@ -112,7 +113,7 @@ document_content_description = "Knowledge Base official narratives and facts"
 
 # Initialize the SelfQueryRetriever, enabling it to construct queries over the vector store's metadata
 retriever = SelfQueryRetriever.from_llm(
-    llm_google,
+    llm1,
     vectorstore,
     document_content_description,
     metadata_field_info,

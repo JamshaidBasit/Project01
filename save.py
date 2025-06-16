@@ -1,10 +1,15 @@
+
+
 import pymongo
 from typing import Dict
 from config import MONGO_URI
-
+import os
+from dotenv import load_dotenv
+load_dotenv()
 # --- MongoDB Configuration for Final Results ---
-RESULTS_DB_NAME = "analysis_results_db"
-RESULTS_COLLECTION_NAME = "review_outcomes"
+RESULTS_DB_NAME = os.getenv("RESULTS_DB_NAME1")
+RESULTS_COLLECTION_NAME = os.getenv("RESULTS_COLLECTION_NAM1")
+
 
 def clear_results_collection():
     """
@@ -51,13 +56,8 @@ def save_results_to_mongo(report_data: Dict, result_with_review: Dict):
         page_number = report_data.get("metadata", {}).get("page", "N/A")
         chunk_number = report_data.get("metadata", {}).get("paragraph", "N/A")
         analyzed_text = report_data.get("report_text", "N/A")
-        predicted_label = report_data.get("metadata", {}).get("predicted_label", "N/A")
-        # MODIFIED: Extract only the confidence for the predicted label
-        # The 'all_scores' dictionary is still passed in metadata from main.py,
-        # but we only need the confidence of the predicted_label here.
-        classification_scores = report_data.get("metadata", {}).get("classification_scores", {})
-        predicted_label_confidence = classification_scores.get(predicted_label, 0.0) if predicted_label != "Empty input text" else 0.0
-
+        predicted_label = report_data.get("metadata", {}).get("predicted_label", "N/A") # NEW
+        classification_scores = report_data.get("metadata", {}).get("classification_scores", {}) # NEW
 
         # Prepare the base document to be saved
         result_document = {
@@ -66,8 +66,8 @@ def save_results_to_mongo(report_data: Dict, result_with_review: Dict):
             "Page Number": page_number,
             "Chunk no.": chunk_number,
             "Text Analyzed": analyzed_text,
-            "Predicted Label": predicted_label,
-            "Predicted Label Confidence": predicted_label_confidence, # MODIFIED: New field for single confidence
+            "Predicted Label": predicted_label, # NEW
+            "Classification Scores": classification_scores, # NEW
         }
 
         # Add agent-specific results dynamically

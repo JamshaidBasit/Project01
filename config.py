@@ -17,6 +17,6 @@ CHROMA_DB_DIRECTORY = "chrome_dB"
 
 # Replace with your actual API keys
 GROQ_API_KEY=os.getenv("GROQ_API_KEY1")
-GOOGLE_API_KEY=os.getenv("GOOGLE_API_KEY1")
+
 
 
