@@ -231,7 +231,7 @@ DO NOT include any explanation or text outside of the JSON object.
             return "human_review_needed_sub_step"
 
         max_retries = 3
-        if state["current_agent_confidence"] >= 90:
+        if state["current_agent_confidence"] >= 80:
             print(f"\n✨ {state['current_agent_name']} Confidence {state['current_agent_confidence']}% is sufficient. Exiting sub-workflow.")
             return "end"
         elif state["current_agent_retries"] < max_retries:
